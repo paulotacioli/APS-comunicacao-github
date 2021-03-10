@@ -32,6 +32,7 @@ public class Cliente {
 		} catch (Exception e) {
 			System.out.println("Ocorreu um erro durante a conexao");
 		}
+		//teste github 
 		 
 
 	}
