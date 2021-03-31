@@ -1,10 +1,21 @@
 package com.example.websocketdemo.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Created by rajeevkumarsingh on 24/07/17.
  */
-
+@Entity
+@Table(name = "tb_chat")
 public class ChatMessage {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
     private MessageType type;
     private String content;
     private String sender;

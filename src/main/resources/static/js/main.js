@@ -33,18 +33,8 @@ function connect(event) {
 
 
 function cadastrar(event) {
-    username = document.querySelector('#name').value.trim();
-
-    if(username) {
-        usernamePage.classList.add('hidden');
-        chatPage.classList.remove('hidden');
-
-        var socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
-
-        stompClient.connect({}, onConnected, onError);
-    }
-    event.preventDefault();
+    console.log("Paulin entrou")
+   
 }
 function onConnected() {
     // Subscribe to the Public Topic
