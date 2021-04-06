@@ -8,6 +8,27 @@ html,body {
     height: 100%;
     overflow: hidden;
 }
+.row {
+    display: flex;
+  }
+  .fundo-centralizado{
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .alarme-erro{
+    background-color: red;
+    width: 100%;
+    color: white;
+  }
+
+  
+  .column {
+    flex: 50%;
+  }
 
 body {
     margin: 0;
@@ -51,6 +72,8 @@ body:before {
 
 .form-group {
     margin-bottom: 15px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 input {

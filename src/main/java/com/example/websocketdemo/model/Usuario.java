@@ -1,14 +1,9 @@
 package com.example.websocketdemo.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Created by rajeevkumarsingh on 24/07/17.
@@ -47,6 +42,13 @@ public class Usuario {
 
 	public void setSenha(String senha) {
 		this.senha = senha;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Usuario [nome=" + nome + ", senha=" + senha + "]";
 	}	
 	
 

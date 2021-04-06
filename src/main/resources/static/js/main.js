@@ -1,13 +1,20 @@
 'use strict';
 
 var usernamePage = document.querySelector('#username-page');
+var usernamePageCreate = document.querySelector('#username-page-create');
+
+var senhaInconpativel = document.querySelector('#senha-inconpativel');
+
+var senhaErroSintaxe = document.querySelector('#senha-erro-sintaxe');
+
 var chatPage = document.querySelector('#chat-page');
 var usernameForm = document.querySelector('#usernameForm');
+var usernameFormCreate = document.querySelector('#usernameCreateForm');
+
 var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
-
 var stompClient = null;
 var username = null;
 
@@ -15,8 +22,12 @@ var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
+var nomeCadastro = null;
+var password = null;
+var passwordConfirm = null;
 
 function connect(event) {
+    console.log("Entrou 1");
     username = document.querySelector('#name').value.trim();
 
     if(username) {
@@ -30,13 +41,78 @@ function connect(event) {
     }
     event.preventDefault();
 }
+function mudarPaginaCadastro(){
+    console.log("mudarPaginaCadastro")
+    chatPage.classList.add('hidden');
+    usernamePage.classList.add('hidden');
+    usernamePageCreate.classList.remove('hidden');
 
-
-function cadastrar(event) {
-    console.log("Paulin entrou")
-   
 }
+function mudarPaginaParaLogin(){
+    chatPage.classList.add('hidden');
+    usernamePage.classList.remove('hidden');
+
+}
+
+function pegarUsuario(e){
+    console.log(e.target.value)
+    nomeCadastro = e.target.value
+}
+
+function pegarSenha(e){
+    console.log(e.target.value)
+    password = e.target.value
+}
+
+function pegarSenhaConfirm(e){
+    console.log(e.target.value)
+    passwordConfirm = e.target.value
+}
+//-----------------------------------------------------------------------
+
+function cadastrarUsuario(){
+    console.log("nome do usuario", nomeCadastro)
+    console.log("senha:", password)
+    console.log("SenhaConfirm:", passwordConfirm)
+
+    if( password != passwordConfirm ) {
+
+        console.log("entrou no primeiro erro")
+
+        senhaInconpativel.classList.remove('hidden');
+        senhaErroSintaxe.classList.add('hidden');
+
+    } else if ( password.length <= 5  ){
+
+        console.log("entrou no segundo erro")
+        
+        senhaErroSintaxe.classList.remove('hidden');
+        senhaInconpativel.classList.add('hidden');
+
+    } else {
+
+        var user = {
+            "nome": nomeCadastro,
+            "senha": password
+        }
+        var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+        var theUrl = "/usuario/cadastrar";
+        xmlhttp.open("POST", theUrl);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.send(JSON.stringify(user));
+
+        console.log("DEPOS DE ENVIARRRRRRRRRRRR", xmlhttp)
+        console.log("AQUI ESTA O QUE ESTA NO USER: ", user)
+        senhaErroSintaxe.classList.add('hidden');
+        senhaInconpativel.classList.add('hidden');
+
+    }
+}
+
+//-------------------------------------------------------------------------
+
 function onConnected() {
+    console.log("Entrou 3");
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
 
@@ -48,15 +124,25 @@ function onConnected() {
 
     connectingElement.classList.add('hidden');
 }
+    
+   
+//     var xhr = new XMLHttpRequest();
+// xhr.onreadystatechange = function() {};
+// xhr.open('POST', '/usuario', user);
+// xhr.send()
+
+
 
 
 function onError(error) {
+    console.log("Entrou 4");
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     connectingElement.style.color = 'red';
 }
 
 
 function sendMessage(event) {
+    console.log("Entrou 5");
     var messageContent = messageInput.value.trim();
 
     if(messageContent && stompClient) {
@@ -72,8 +158,12 @@ function sendMessage(event) {
     event.preventDefault();
 }
 
+function onMessageReceived2(payload) {
+    console.log("entrou no onMessageReceived 2")
+}
 
 function onMessageReceived(payload) {
+    console.log("Entrou 6");
     var message = JSON.parse(payload.body);
 
     var messageElement = document.createElement('li');
@@ -112,6 +202,7 @@ function onMessageReceived(payload) {
 
 
 function getAvatarColor(messageSender) {
+    console.log("Entrou 7");
     var hash = 0;
     for (var i = 0; i < messageSender.length; i++) {
         hash = 31 * hash + messageSender.charCodeAt(i);
@@ -120,8 +211,26 @@ function getAvatarColor(messageSender) {
     var index = Math.abs(hash % colors.length);
     return colors[index];
 }
-
 usernameForm.addEventListener('submit', connect, true)
-usernameForm.addEventListener('submit_cadastro', cadastrar, true)
 
-messageForm.addEventListener('submit', sendMessage, true)
+document.getElementById('btn_cadastro').onclick = function() {
+  mudarPaginaCadastro()
+}
+
+// usernameFormCadastre.addEventListener('submit', mudarPaginaCadastro, true)
+
+
+document.getElementById('btn_create').onclick = function() {
+    cadastrarUsuario()
+  }
+  document.getElementById('input_username_create').onchange = function(e) {
+    pegarUsuario(e)
+  }
+
+  document.getElementById('password').onchange = function(e) {
+    pegarSenha(e)
+  }
+
+  document.getElementById('password_confirm').onchange = function(e) {
+    pegarSenhaConfirm(e)
+  }
