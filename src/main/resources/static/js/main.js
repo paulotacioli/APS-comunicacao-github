@@ -25,6 +25,8 @@ var colors = [
 var nomeCadastro = null;
 var password = null;
 var passwordConfirm = null;
+var nomeLogin = "";
+var senhaLogin = "";
 
 function connect(event) {
     console.log("Entrou 1");
@@ -59,6 +61,15 @@ function pegarUsuario(e){
     nomeCadastro = e.target.value
 }
 
+function pegarUsuarioLogin(e){
+    console.log(e.target.value)
+    nomeLogin = e.target.value
+}
+
+function pegarSenhaLogin(e){
+    console.log(e.target.value)
+    senhaLogin = e.target.value
+}
 function pegarSenha(e){
     console.log(e.target.value)
     password = e.target.value
@@ -101,7 +112,7 @@ function cadastrarUsuario(){
         xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xmlhttp.send(JSON.stringify(user));
 
-        console.log("DEPOS DE ENVIARRRRRRRRRRRR", xmlhttp)
+        console.log("DEPOS DE ENVIARRRRRRRRRRRR", xmlhttp.response)
         console.log("AQUI ESTA O QUE ESTA NO USER: ", user)
         senhaErroSintaxe.classList.add('hidden');
         senhaInconpativel.classList.add('hidden');
@@ -109,6 +120,28 @@ function cadastrarUsuario(){
     }
 }
 
+function autenticarUsuario(){
+
+    console.log("entrou aquiiiiikjolmlkmiii", nomeLogin, senhaLogin)
+        var user = {
+            "nome": nomeLogin,
+            "senha": senhaLogin
+        }
+        var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+        var theUrl = "/usuario/authenticate";
+        xmlhttp.open("POST", theUrl);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.send(JSON.stringify(user));
+
+        console.log("IMPRIMINDO RESULTADO DA API", xmlhttp)
+        console.log("AQUI ESTA O QUE ESTA NO USER: ", user)
+        senhaErroSintaxe.classList.add('hidden');
+        senhaInconpativel.classList.add('hidden');
+
+
+
+    
+    }
 //-------------------------------------------------------------------------
 
 function onConnected() {
@@ -211,12 +244,15 @@ function getAvatarColor(messageSender) {
     var index = Math.abs(hash % colors.length);
     return colors[index];
 }
-usernameForm.addEventListener('submit', connect, true)
+// usernameForm.addEventListener('submit', autenticarUsuario, true)
 
 document.getElementById('btn_cadastro').onclick = function() {
   mudarPaginaCadastro()
 }
 
+document.getElementById('btn_autenticar').onclick = function() {
+    autenticarUsuario()
+  }
 // usernameFormCadastre.addEventListener('submit', mudarPaginaCadastro, true)
 
 
@@ -227,8 +263,15 @@ document.getElementById('btn_create').onclick = function() {
     pegarUsuario(e)
   }
 
+  document.getElementById('name').onchange = function(e) {
+    pegarUsuarioLogin(e)
+  }
   document.getElementById('password').onchange = function(e) {
     pegarSenha(e)
+  }
+
+  document.getElementById('password-login').onchange = function(e) {
+    pegarSenhaLogin(e)
   }
 
   document.getElementById('password_confirm').onchange = function(e) {

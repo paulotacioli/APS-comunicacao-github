@@ -6,4 +6,6 @@ import com.example.websocketdemo.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+	
+	Usuario findByNome(String nome);
 }
