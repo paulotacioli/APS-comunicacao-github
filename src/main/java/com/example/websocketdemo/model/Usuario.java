@@ -5,13 +5,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 
-/**
- * Created by rajeevkumarsingh on 24/07/17.
- */
+
 @Entity
-@Table(name = "tb_usuario")
+@Table(name = "tb_usuario",
+uniqueConstraints=
+@UniqueConstraint(columnNames={"nome"})
+)
 public class Usuario {
 	
 	@NotEmpty

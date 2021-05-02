@@ -4,7 +4,8 @@ var usernamePage = document.querySelector('#username-page');
 var usernamePageCreate = document.querySelector('#username-page-create');
 
 var senhaInconpativel = document.querySelector('#senha-inconpativel');
-
+var senhaInconpativelLogin = document.querySelector('#senha-inconpativel-login');
+var usuarioNaoExisteLogin = document.querySelector('#usuario-nao-existe-login');
 var senhaErroSintaxe = document.querySelector('#senha-erro-sintaxe');
 
 var chatPage = document.querySelector('#chat-page');
@@ -112,7 +113,7 @@ function cadastrarUsuario(){
         xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xmlhttp.send(JSON.stringify(user));
 
-        console.log("DEPOS DE ENVIARRRRRRRRRRRR", xmlhttp.response)
+        console.log("DEPOiS DE ENVIARRRRRRRRRRRR")
         console.log("AQUI ESTA O QUE ESTA NO USER: ", user)
         senhaErroSintaxe.classList.add('hidden');
         senhaInconpativel.classList.add('hidden');
@@ -132,11 +133,27 @@ function autenticarUsuario(){
         xmlhttp.open("POST", theUrl);
         xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xmlhttp.send(JSON.stringify(user));
+        
+        console.log("olaaaaaat", xmlhttp.responseText)
+        xmlhttp.onload = function(e) {
+            if (xmlhttp.response === "true"){
+                console.log("entrou como true", xmlhttp.response)
+                connect(true)
+            } else {
+                if (xmlhttp.response === "Usuario não existe!"){
+                usuarioNaoExisteLogin.classList.remove('hidden');
 
+                } else if (xmlhttp.response === "Senha invalida!") {
+                    senhaInconpativelLogin.classList.remove('hidden');
+
+                }
+        
+                console.log("jajajaj", xmlhttp.response, xmlhttp.response === "true")
+            }   
+          }
         console.log("IMPRIMINDO RESULTADO DA API", xmlhttp)
         console.log("AQUI ESTA O QUE ESTA NO USER: ", user)
-        senhaErroSintaxe.classList.add('hidden');
-        senhaInconpativel.classList.add('hidden');
+        
 
 
 
@@ -259,6 +276,7 @@ document.getElementById('btn_autenticar').onclick = function() {
 document.getElementById('btn_create').onclick = function() {
     cadastrarUsuario()
   }
+
   document.getElementById('input_username_create').onchange = function(e) {
     pegarUsuario(e)
   }

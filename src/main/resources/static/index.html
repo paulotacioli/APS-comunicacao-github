@@ -57,7 +57,7 @@
    
     <div id="username-page"  >
         <div class="username-page-container">
-            <h1 class="title">LoginNN</h1>
+            <h1 class="title">Login</h1>
             <form id="usernameForm" name="usernameForm">
                 <div class="form-group">
                     <input type="text" id="name" placeholder="Username" autocomplete="off" class="form-control" />
@@ -65,17 +65,26 @@
                 <div class="form-group">
                     <input type="password" id="password-login" placeholder="Password" autocomplete="off" class="form-control" />
                 </div>
+                <div id ="usuario-nao-existe-login" class="alarme-erro hidden fundo-centralizado">
+                    <small>Usuário não existe.</small>
+                </div>
+                <div id ="senha-inconpativel-login" class="alarme-erro hidden fundo-centralizado">
+                    <small>Senhas incorreta.</small>
+                </div>
                 <div class="row fundo-centralizado">
 
                 <div class="form-group">
                     <button type="button" id = "btn_autenticar" 
                     class="accent username-submit">Entrar</button>
                 </div>
+             
                 <div class="form-group">
                     <button  type="button"  id = "btn_cadastro" class="accent username-submit">Cadastrar</button>
                 </div>
             </div>
-     
+        
+
+           
             </form>
           
         </div>
