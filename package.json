@@ -1,0 +1,19 @@
+{
+  "name": "projeto-chat",
+  "version": "1.0.0",
+  "description": "You can checkout the live version of the application at https://spring-ws-chat.herokuapp.com/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulotacioli/APS-comunicacao-github.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulotacioli/APS-comunicacao-github/issues"
+  },
+  "homepage": "https://github.com/paulotacioli/APS-comunicacao-github#readme"
+}

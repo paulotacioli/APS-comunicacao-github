@@ -1,14 +1,14 @@
 package com.example.websocketdemo.model;
 
+import java.io.File;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- * Created by rajeevkumarsingh on 24/07/17.
- */
+
 @Entity
 @Table(name = "tb_chat")
 public class ChatMessage {
@@ -16,11 +16,33 @@ public class ChatMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+    private File file;
+	
     private MessageType type;
+    
     private String content;
+    
     private String sender;
+    
+	public Long getId() {
+		return id;
+	}
 
-    public enum MessageType {
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+    public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+
+	public enum MessageType {
         CHAT,
         JOIN,
         LEAVE

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,9 +39,13 @@ public class UsuarioController {
     	
 		return ResponseEntity.ok().body(response);
 
-    	
-
-
     }
+    
+    @PutMapping(value = "/atualizar-nome")
+	public ResponseEntity<Usuario> atualizarNome (@RequestBody Usuario obj){
+		obj = service.atualizarNome(obj);
+		return ResponseEntity.ok().body(obj);
+	 
+	}
     
 }

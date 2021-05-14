@@ -40,7 +40,14 @@ public class UsuarioService {
 		}
 
 	}
+	
+	public Usuario atualizarNome(Usuario obj) {
 
+		Usuario entity = repository.findByNome(obj.getNome());
+		return repository.save(entity);
+	}
+
+	
 	public Usuario insert(Usuario usuario) {
 		return repository.save(usuario);
 	}
