@@ -18,6 +18,11 @@ public class ChatService {
 		return repository.findAll();
 
 	}
+	public void insert(ChatMessage obj) {
+		System.out.println("obj"+ obj);
+		 repository.save(obj);
+
+	}
 	
 
 }

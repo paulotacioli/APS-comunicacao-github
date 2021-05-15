@@ -43,6 +43,7 @@ var urlUpload = '';
 var usuarioLogado = '';
 var senhaEdit = '';
 var senhaConfirEdit = '';
+
 function connect(event) {
     console.log("Entrou 1");
     username = document.querySelector('#name').value.trim();
@@ -163,7 +164,16 @@ function cadastrarUsuario() {
         console.log("AQUI ESTA O QUE ESTA NO USER: ", user)
         senhaErroSintaxe.classList.add('hidden');
         senhaInconpativel.classList.add('hidden');
+        xmlhttp.onload = function () {
+            console.log('DONE', xmlhttp.status); // readyState will be 4
+            if (xmlhttp.status == 200) {
+                mensagemSucesso.classList.remove('hidden');
 
+            } else {
+                erroBackend.classList.remove('hidden');
+
+            }
+        };
     }
 }
 
@@ -227,6 +237,7 @@ function autenticarUsuario() {
     }
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
     var theUrl = "/usuario/authenticate";
+    carregarHistorico()
     xmlhttp.open("POST", theUrl);
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.send(JSON.stringify(user));
@@ -360,6 +371,7 @@ function sendMessage(event) {
 
 
 function onMessageReceived(payload) {
+
     console.log("PAYLOAS", payload);
     var message = JSON.parse(payload.body);
     usuarioLogado = message.sender;
@@ -389,6 +401,106 @@ function onMessageReceived(payload) {
         messageElement.appendChild(usernameElement);
     }
     //MENSAGEM DE TEXTO
+    console.log("antes em message.content", message.content)
+
+    if (message.content != null) {
+        console.log("entoru em message.content", message.content)
+        var textElement = document.createElement('p');
+        var messageText = document.createTextNode(message.content);
+
+        textElement.appendChild(messageText);
+
+        messageElement.appendChild(textElement);
+
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+    //MENSAGEM DE ARQUIVO
+    if (message.file != null  && message.file != '') {
+        
+        var testStr = message.file
+        var str = testStr;
+        var result = str.split('chat-demo\\')[1]
+        var textElement = document.createElement('p');
+        console.log("result", result)
+
+        textElement.innerHTML = '<a target="_blank" href="' + message.file + '"><svg xmlns="http://www.w3.org/2000/svg" width="27" height="26" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg></a>';
+        var messageText = document.createTextNode(" ");
+        textElement.appendChild(messageText);
+        messageElement.appendChild(textElement);
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+
+
+
+
+}
+
+function carregarHistorico() {
+    console.log("entrou no carregar histórico")
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+    var theUrl = "/chat/listar";
+    var objListaMensagens = [];
+    var tamanho = 0;
+    xmlhttp.open("GET", theUrl);
+    xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xmlhttp.send();
+
+    console.log("PEGANDO O HISTÓRICO", xmlhttp.responseText)
+    xmlhttp.onload = function (e) {
+
+        objListaMensagens = xmlhttp.response;
+
+        tamanho = JSON.parse(objListaMensagens).length;
+        var objeto = JSON.parse(objListaMensagens)
+        //for responsável por carregar o histórico de mensagens
+     
+
+        for (let i = 0; i < tamanho; i++) {
+            console.log("objListaMensagens", objeto[i])
+             var bodyAtual = { "id": null, "file": objeto[i].file, "type": "MESSAGE", "content": objeto[i].content, "sender": objeto[i].sender }
+            imprimirHistorico({ body: bodyAtual})
+        }
+        var bodyAtual1 = { "id": null, "file": null, "type": "JOIN", "content": null, "sender": "Hoje" }
+        imprimirHistorico({ body: bodyAtual1})
+    }
+
+
+
+
+}
+
+function imprimirHistorico(payload) {
+    console.log("imprimirHistorico", payload);
+    var message = payload.body;
+
+
+    usuarioLogado = message.sender;
+
+
+    var messageElement = document.createElement('li');
+
+    if (message.type === 'JOIN') {
+        messageElement.classList.add('event-message');
+        message.content = message.sender + '';
+    }  else {
+        messageElement.classList.add('chat-message');
+
+        var avatarElement = document.createElement('i');
+        var avatarText = document.createTextNode(message.sender[0]);
+        avatarElement.appendChild(avatarText);
+        avatarElement.style['background-color'] = getAvatarColor(message.sender);
+
+        messageElement.appendChild(avatarElement);
+
+        var usernameElement = document.createElement('span');
+        var usernameText = document.createTextNode(message.sender);
+        usernameElement.appendChild(usernameText);
+        messageElement.appendChild(usernameElement);
+    }
+    //MENSAGEM DE TEXTO
 
     if (message.content != null) {
         console.log("entoru em message.content")
@@ -403,13 +515,15 @@ function onMessageReceived(payload) {
         messageArea.scrollTop = messageArea.scrollHeight;
     }
     //MENSAGEM DE ARQUIVO
-    if (message.file != null) {
+    if (message.file != null  && message.file != '') {
+        console.log("message.file", message.file)
 
-        var testStr = message.file
-        var str = testStr;
-        var result = str.split('chat-demo\\')[1]
+        // var testStr = message.file
+        // var str = testStr;
+        // var result = str.split('chat-demo\\')[1]
+        // console.log("result", result)
         var textElement = document.createElement('p');
-        textElement.innerHTML = '<a target="_blank" href="' + result + '"><svg xmlns="http://www.w3.org/2000/svg" width="27" height="26" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg></a>';
+        textElement.innerHTML = '<a target="_blank" href="' + message.file + '"><svg xmlns="http://www.w3.org/2000/svg" width="27" height="26" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg></a>';
         var messageText = document.createTextNode(" ");
         textElement.appendChild(messageText);
         messageElement.appendChild(textElement);
@@ -422,6 +536,7 @@ function onMessageReceived(payload) {
 
 
 }
+
 
 function pegarSenhaConfirEdit(e) {
     senhaConfirEdit = e.target.value

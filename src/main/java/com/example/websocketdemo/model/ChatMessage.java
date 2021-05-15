@@ -16,7 +16,7 @@ public class ChatMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-    private File file;
+    private String file;
 	
     private MessageType type;
     
@@ -33,14 +33,7 @@ public class ChatMessage {
 	}
 
 
-    public File getFile() {
-		return file;
-	}
-
-	public void setFile(File file) {
-		this.file = file;
-	}
-
+   
 
 	public enum MessageType {
         CHAT,
@@ -60,10 +53,16 @@ public class ChatMessage {
         return content;
     }
 
+    public void setFile(String file) {
+        this.file = file;
+    }
+    public String getFile() {
+        return file;
+    }
+
     public void setContent(String content) {
         this.content = content;
     }
-
     public String getSender() {
         return sender;
     }
@@ -71,4 +70,12 @@ public class ChatMessage {
     public void setSender(String sender) {
         this.sender = sender;
     }
+
+	@Override
+	public String toString() {
+		return "ChatMessage [id=" + id + ", file=" + file + ", type=" + type + ", content=" + content + ", sender="
+				+ sender + "]";
+	}
+    
+    
 }
