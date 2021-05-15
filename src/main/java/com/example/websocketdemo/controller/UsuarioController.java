@@ -41,9 +41,10 @@ public class UsuarioController {
 
     }
     
-    @PutMapping(value = "/atualizar-nome")
-	public ResponseEntity<Usuario> atualizarNome (@RequestBody Usuario obj){
-		obj = service.atualizarNome(obj);
+	@RequestMapping(value = "/editar",  method =  RequestMethod.POST)
+    public ResponseEntity<Usuario> editarSenha(@RequestBody Usuario obj ) {
+		System.out.println("editar usuario obj"+ obj);
+		obj = service.editarSenha(obj);
 		return ResponseEntity.ok().body(obj);
 	 
 	}

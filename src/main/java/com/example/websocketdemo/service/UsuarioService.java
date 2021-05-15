@@ -41,9 +41,10 @@ public class UsuarioService {
 
 	}
 	
-	public Usuario atualizarNome(Usuario obj) {
+	public Usuario editarSenha(Usuario obj) {
 
 		Usuario entity = repository.findByNome(obj.getNome());
+		entity.setSenha(new BCryptPasswordEncoder().encode(obj.getSenha()));
 		return repository.save(entity);
 	}
 

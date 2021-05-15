@@ -2,18 +2,28 @@
 
 var usernamePage = document.querySelector('#username-page');
 var usernamePageCreate = document.querySelector('#username-page-create');
+var usernamePageEdit = document.querySelector('#username-page-edit');
+var senhaInconpativelEdit = document.querySelector('#senha-inconpativel-edit');
+var senhaInconpativelLoginEdit = document.querySelector('#senha-inconpativel-login-edit');
 var senhaInconpativel = document.querySelector('#senha-inconpativel');
 var senhaInconpativelLogin = document.querySelector('#senha-inconpativel-login');
 var usuarioNaoExisteLogin = document.querySelector('#usuario-nao-existe-login');
 var senhaErroSintaxe = document.querySelector('#senha-erro-sintaxe');
+var senhaErroSintaxeEdit = document.querySelector('#senha-erro-sintaxe-edit');
+var mensagemSucesso = document.querySelector('#mensagem-sucesso');
+var mensagemSucessoEdit = document.querySelector('#mensagem-sucesso-edit');
+var erroBackendEdit = document.querySelector('#erro-backend-edit');
+var erroBackend = document.querySelector('#erro-backend');
 var chatPage = document.querySelector('#chat-page');
 var usernameForm = document.querySelector('#usernameForm');
+var inputUsernameEdit = document.querySelector("#input_username_edit")
 var usernameFormCreate = document.querySelector('#usernameCreateForm');
-
+var messageFile = document.querySelector('#message-file');
+var botaoEnviarMensagem = document.querySelector('#botao_enviar_mensagem');
+var carregando = document.querySelector('#carregando');
 var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
-// var messageInputFile = document.querySelector('#message-file');
-
+var adicionarAnexoDisplay = document.querySelector('#adicionar_anexo');
 var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
 var stompClient = null;
@@ -30,7 +40,9 @@ var nomeLogin = "";
 var senhaLogin = "";
 var arquivo = null;
 var urlUpload = '';
-
+var usuarioLogado = '';
+var senhaEdit = '';
+var senhaConfirEdit = '';
 function connect(event) {
     console.log("Entrou 1");
     username = document.querySelector('#name').value.trim();
@@ -53,9 +65,28 @@ function mudarPaginaCadastro() {
     usernamePageCreate.classList.remove('hidden');
 
 }
+function adicionarAnexo() {
+    console.log("adicionar anexo")
+    messageFile.classList.remove('hidden');
+    adicionarAnexoDisplay.classList.add('hidden')
+
+
+}
+
+function abrirPaginaCadastro() {
+    // stompClient.subscribe('/topic/public', onMessageReceived);
+    chatPage.classList.add('hidden');
+    usernamePageEdit.classList.remove('hidden');
+    document.getElementById('input_username_edit').value = usuarioLogado;
+}
 function mudarPaginaParaLogin() {
     chatPage.classList.add('hidden');
     usernamePage.classList.remove('hidden');
+
+}
+function mudarPaginaChat() {
+    chatPage.classList.remove('hidden');
+    usernamePageEdit.classList.add('hidden');
 
 }
 
@@ -78,11 +109,19 @@ function pegarSenha(e) {
     password = e.target.value
 }
 function pegarArquivo(e) {
-    console.log("eai!,",e.target.files[0])
+    console.log("eai!,", e.target.files[0])
     arquivo = e.target.files[0]
     uploadFiles()
 }
+function limparVariavelArquivo() {
+    arquivo = null;
+    urlUpload = '';
+    document.getElementById('message-file').value = "";
+    messageFile.classList.add('hidden');
+    adicionarAnexoDisplay.classList.remove('hidden')
 
+
+}
 function pegarSenhaConfirm(e) {
     console.log(e.target.value)
     passwordConfirm = e.target.value
@@ -124,6 +163,57 @@ function cadastrarUsuario() {
         console.log("AQUI ESTA O QUE ESTA NO USER: ", user)
         senhaErroSintaxe.classList.add('hidden');
         senhaInconpativel.classList.add('hidden');
+
+    }
+}
+
+
+
+function editarUsuario() {
+    console.log("nome do usuario", nomeCadastro)
+    console.log("senha:", senhaEdit)
+    console.log("SenhaConfirm:", senhaConfirEdit)
+
+    if (senhaEdit != senhaConfirEdit) {
+
+        console.log("entrou no primeiro erro1111")
+
+        senhaInconpativelEdit.classList.remove('hidden');
+        senhaErroSintaxeEdit.classList.add('hidden');
+
+    } else if (senhaEdit.length <= 5) {
+
+        console.log("entrou no segundo erro111")
+
+        senhaErroSintaxeEdit.classList.remove('hidden');
+        senhaInconpativelEdit.classList.add('hidden');
+
+    } else {
+
+        var user = {
+            "nome": nomeCadastro,
+            "senha": senhaEdit
+        }
+        var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+        var theUrl = "/usuario/editar";
+        xmlhttp.open("POST", theUrl);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.send(JSON.stringify(user));
+
+        console.log("DEPOiS DE ENVIARRRRRRRRRRRR")
+        console.log("AQUI ESTA O QUE ESTA NO status: ", xmlhttp.status)
+        xmlhttp.onload = function () {
+            console.log('DONE', xmlhttp.status); // readyState will be 4
+            if (xmlhttp.status == 200) {
+                mensagemSucessoEdit.classList.remove('hidden');
+
+            } else {
+                erroBackendEdit.classList.remove('hidden');
+
+            }
+        };
+        senhaErroSintaxeEdit.classList.add('hidden');
+        senhaInconpativelEdit.classList.add('hidden');
 
     }
 }
@@ -200,11 +290,10 @@ function onError(error) {
 
 
 function uploadFiles() {
-
-    console.log("arquivo0", arquivo)
+    botaoEnviarMensagem.classList.add('hidden')
+    carregando.classList.remove('hidden')
 
     const storage1 = firebase.storage();
-    console.log("sotrate", firebase)
 
 
     var data = new Date();
@@ -215,7 +304,7 @@ function uploadFiles() {
 
     uploadTask.on('state_changed',
         snapshot => {
-            
+
         }, (error) => {
 
             console.log("erro no upload")
@@ -226,6 +315,9 @@ function uploadFiles() {
             uploadTask.snapshot.ref.getDownloadURL().then(url => {
                 console.log('sucesos no upload', url)
                 urlUpload = url;
+                botaoEnviarMensagem.classList.remove('hidden')
+                carregando.classList.add('hidden')
+
             })
 
         })
@@ -242,7 +334,7 @@ function sendMessage(event) {
         //colocar o arquivo na pasta src\main\Arquivos
         console.log("urlUpload", urlUpload)
         caminhoArquivo = urlUpload;
-  
+
     } else {
         console.log("urlUpload2", urlUpload)
 
@@ -262,18 +354,17 @@ function sendMessage(event) {
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
+    limparVariavelArquivo()
     event.preventDefault();
 }
 
-function onMessageReceived2(payload) {
-    console.log("entrou no onMessageReceived 2")
-}
 
 function onMessageReceived(payload) {
     console.log("PAYLOAS", payload);
     var message = JSON.parse(payload.body);
+    usuarioLogado = message.sender;
 
-console.log("URL RECEBIDA, ")
+
     var messageElement = document.createElement('li');
 
     if (message.type === 'JOIN') {
@@ -297,40 +388,50 @@ console.log("URL RECEBIDA, ")
         usernameElement.appendChild(usernameText);
         messageElement.appendChild(usernameElement);
     }
-    if (message.file != null ){
+    //MENSAGEM DE TEXTO
 
-        //fazer aparecer um botao quando cair aqui e tiver arquivo
-        var testStr = message.file
-
+    if (message.content != null) {
+        console.log("entoru em message.content")
         var textElement = document.createElement('p');
-        
-        var messageText = document.createTextNode(testStr);
-    
+        var messageText = document.createTextNode(message.content);
+
         textElement.appendChild(messageText);
-    
+
         messageElement.appendChild(textElement);
-    
+
         messageArea.appendChild(messageElement);
         messageArea.scrollTop = messageArea.scrollHeight;
-    }else {
-    var textElement = document.createElement('p');
-    var messageText = document.createTextNode(message.content );
+    }
+    //MENSAGEM DE ARQUIVO
+    if (message.file != null) {
 
-    textElement.appendChild(messageText);
+        var testStr = message.file
+        var str = testStr;
+        var result = str.split('chat-demo\\')[1]
+        var textElement = document.createElement('p');
+        textElement.innerHTML = '<a target="_blank" href="' + result + '"><svg xmlns="http://www.w3.org/2000/svg" width="27" height="26" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg></a>';
+        var messageText = document.createTextNode(" ");
+        textElement.appendChild(messageText);
+        messageElement.appendChild(textElement);
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
 
-    messageElement.appendChild(textElement);
 
-    messageArea.appendChild(messageElement);
-    messageArea.scrollTop = messageArea.scrollHeight;
+
+
+
 }
 
-    //MENSAGEM DE ARQUIVOOOOOOOOOOOOOOOOOOOO
- 
-
-    
+function pegarSenhaConfirEdit(e) {
+    senhaConfirEdit = e.target.value
 }
 
 
+function pegarSenhaEdit(e) {
+    console.log("pegarSenhaEdit", e.target.value)
+    senhaEdit = e.target.value
+}
 function getAvatarColor(messageSender) {
     console.log("Entrou 7");
     var hash = 0;
@@ -359,6 +460,9 @@ document.getElementById('btn_autenticar').onclick = function () {
 document.getElementById('btn_create').onclick = function () {
     cadastrarUsuario()
 }
+document.getElementById('btn_edit_salvar').onclick = function () {
+    editarUsuario()
+}
 
 document.getElementById('input_username_create').onchange = function (e) {
     pegarUsuario(e)
@@ -366,6 +470,11 @@ document.getElementById('input_username_create').onchange = function (e) {
 
 document.getElementById('name').onchange = function (e) {
     pegarUsuarioLogin(e)
+}
+
+document.getElementById('adicionar_anexo').onclick = function (e) {
+
+    adicionarAnexo()
 }
 document.getElementById('password').onchange = function (e) {
     pegarSenha(e)
@@ -377,8 +486,21 @@ document.getElementById('message-file').onchange = function (e) {
 document.getElementById('password-login').onchange = function (e) {
     pegarSenhaLogin(e)
 }
+document.getElementById('config').onclick = function (e) {
+    abrirPaginaCadastro(e)
+}
 
 document.getElementById('password_confirm').onchange = function (e) {
     pegarSenhaConfirm(e)
 }
 messageForm.addEventListener('submit', sendMessage, true)
+
+document.getElementById('password-edit').onchange = function (e) {
+    pegarSenhaEdit(e)
+}
+document.getElementById('password-confir-edit').onchange = function (e) {
+    pegarSenhaConfirEdit(e)
+}
+document.getElementById('btn_edit_voltar').onclick = function (e) {
+    mudarPaginaChat(e)
+}
